@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'brewery'           // package name
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)   // Java 21
+    }
+}
+
+repositories {
+    mavenCentral()   // Use Maven Central repository
+}
+
+dependencies {
+    // ✅ JUnit testing framework
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+}
+
+application {
+    //
+    mainClass = 'brewery.app.Main'  // Main class path
+}
+
+test {
+    useJUnitPlatform() // Use JUnit Platform for testing
+}
