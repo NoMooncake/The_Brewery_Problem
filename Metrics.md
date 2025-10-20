@@ -1,8 +1,7 @@
 # **Brewery Problem Metrics and Peer Review Analysis**
 
 ### **1. Overview**
-This report summarizes the structural metrics of the *Brewery Problem* project across all packages, based on five key indicators: **WMC**, **DIT**, **NOC**, **CBO**, and **RFC**.  
-It highlights system-level patterns, potential design bottlenecks, and priorities for refactoring.
+This report summarizes the structural metrics of the *Brewery Problem* project across all packages, based on five key indicators: **WMC**, **DIT**, **NOC**, **CBO**, and **RFC**.  It highlights system-level patterns, potential design bottlenecks, and priorities for refactoring.
 
 ---
 
@@ -57,11 +56,9 @@ It highlights system-level patterns, potential design bottlenecks, and prioritie
 ---
 
 ### **6. Conclusion**
-The architecture is structurally sound with **moderate complexity and clean layering**, but **coupling hotspots** exist in orchestration-heavy modules.  
-Minor modular refactoring and clearer boundaries will significantly improve maintainability without altering the overall design.
+The architecture is structurally sound with **moderate complexity and clean layering**, but **coupling hotspots** exist in orchestration-heavy modules. Minor modular refactoring and clearer boundaries will significantly improve maintainability without altering the overall design.
 
 ---
-
 **Author:** Yue Wu  
 **Course:** CS5010 – Programming Design Paradigm  
 **Date:** October 20, 2025  
