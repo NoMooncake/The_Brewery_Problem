@@ -42,11 +42,19 @@ public class TransferOrder {
 
     // Getters for transfer order properties
     public void execute(PathFinder pathFinder, Manifold manifold, PlantRegistry registry) {
-        // TODO:
-        // 1) compute path: pathFinder.shortestCleanPath(from, to)
-        // 2) manifold.connect(from, to)
-        // 3) mark vats/pipes dirty/clean as needed; update batch.moveTo(to)
-        throw new UnsupportedOperationException("execute not implemented");
+        if (batch == null || from == null || to == null) {
+            throw new IllegalStateException("TransferOrder is incomplete (batch/from/to)");
+        }
+
+        // Compute the clean path using PathFinder
+        var path = pathFinder.shortestCleanPath(from, to);
+
+        // Connect the vats via the manifold and perform the transfer
+        manifold.connect(from, to, path);
+        manifold.transfer(batch, from, to);
+
+        // Update the batch's location and mark vats as dirty
+        from.markDirty();
+        batch.moveTo(to);
     }
 }
-

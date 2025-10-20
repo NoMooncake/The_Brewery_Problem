@@ -15,8 +15,8 @@
  *
  * Author: Yue Wu
  * Course: CS5010 - Programming Design Paradigm
- * Date: October, 6, 2025
- * Version: 1.0
+ * Date: October, 19, 2025
+ * Version: 2.0
  * -----------------------------------------------------------------------------
  */
 package brewery.recipes;
@@ -28,26 +28,33 @@ public class Recipe {
     private final double targetTempC;
     private final Map<String, Double> gravityTargets = new HashMap<>();
     private final List<RecipeRequirement> requirements = new ArrayList<>();
+    private final int yieldBottles;
 
     // Constructor to initialize the recipe with a name and target temperature
     public Recipe(String name, double targetTempC) {
+        this(name, targetTempC, 1);
+    }
+
+    // Constructor to initialize the recipe with a name, target temperature, and yield
+    public Recipe(String name, double targetTempC, int yieldBottles) {
         this.name = name;
         this.targetTempC = targetTempC;
+        this.yieldBottles = Math.max(1, yieldBottles);
     }
 
     // Method to add a gravity target checkpoint
-    public String name() {
-        return name;
-    }
+    public String name() {return name;}
     public double targetTempC() {
         return targetTempC;
     }
+    public int yieldBottles() { return yieldBottles; }
+
     public List<RecipeRequirement> requirements() {
         return Collections.unmodifiableList(requirements);
     }
 
     public void addRequirement(RecipeRequirement req) {
-        requirements.add(req);
+        if (req != null) requirements.add(req);
     }
 
     public Optional<RecipeRequirement> getRequirement(Ingredient ing) {

@@ -34,6 +34,10 @@ public class Batch {
     private Vat location;
     private BatchStatus status = BatchStatus.CREATED;
     private final List<Reading> readings = new ArrayList<>();
+    private static int SEQ = 1;
+    public static String newId() {
+        return "B" + (SEQ++);
+    }
 
     // Constructor to initialize a batch with ID, recipe, volume, and initial vat location
     public Batch(String id, Recipe recipe, double volumeL, Vat location) {
@@ -50,8 +54,17 @@ public class Batch {
     // Methods to update batch status and location
     public void moveTo(Vat v) {
         this.location = v;
-        // TODO: update status based on vat type
     }
+    // mark the batch as started mixing
+    public void startMixing() {
+        this.status = BatchStatus.MIXING;
+    }
+
+    // mark the batch finished mixing
+    public void markBottled() {
+        this.status = BatchStatus.BOTTLED;
+    }
+
     // Method to record a new sensor reading for the batch
     public void record(Reading r) {
         readings.add(r);

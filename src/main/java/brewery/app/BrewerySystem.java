@@ -31,6 +31,8 @@ import brewery.recipes.RecipeLibrary;
 import brewery.services.MonitoringService;
 import brewery.services.PathFinder;
 import brewery.services.Scheduler;
+import brewery.plant.Vat;
+import brewery.app.Console;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -79,12 +81,64 @@ public class BrewerySystem {
      * @throws UnsupportedOperationException if the method is not yet implemented
      */
     public Batch createBatch(String recipeName, double sizeL, String mixingVatId) {
-        Recipe r = recipes.get(recipeName);
-        // TODO: check inventory, reserve/take ingredients
-        // TODO: get mixing vat from registry
-        // TODO: create Batch object and place in mixing vat
-        throw new UnsupportedOperationException("createBatch not implemented");
+        Console.stage("Creating batch");
+        Console.info("Using recipe: " + recipeName + ", size: " + sizeL + "L, vat: " + mixingVatId);
+
+        // Placeholder implementation
+        Recipe recipe = recipes.getByName(recipeName);
+        // In a real implementation, we would check inventory, reserve ingredients, etc.
+        Vat mixingVat = registry.get(mixingVatId);
+
+        // Generate a unique batch ID
+        String id = Batch.newId();
+
+        // Create the batch
+        Batch batch = new Batch(id, recipe, sizeL, mixingVat);
+
+        Console.ok("Simulated batch creation successful (placeholder)");
+        return batch;
     }
+
+
+    /**
+     * Creates a batch by target bottles using recipe + inventory check + clean vat allocation.
+     * Returns null on any resource failure (no I/O here; Console 仍由占位调用处控制).
+     */
+    public Batch createBatchByBottles(String recipeName, int targetBottles) {
+        Console.stage("Creating batch by bottles");
+        Console.info("Recipe=" + recipeName + ", bottles=" + targetBottles);
+
+        // lookup recipe
+        Recipe recipe;
+        try { recipe = recipes.getByName(recipeName); }
+        catch (IllegalArgumentException | NullPointerException e) { Console.warn("Recipe not found"); return null; }
+
+        // check & reserve inventory
+        if (!inventory.hasFor(recipe, targetBottles)) {
+            Console.warn("Insufficient ingredients for " + targetBottles + " bottles");
+            return null;
+        }
+        boolean reserved = inventory.reserveFor(recipe, targetBottles);
+        if (!reserved) { Console.warn("Reservation failed unexpectedly"); return null; }
+
+        // allocate clean vat (with rollback if none available)
+        brewery.plant.Vat mixingVat = registry.allocateCleanVat();
+        if (mixingVat == null) {
+            Console.warn("No clean vat available");
+            // rollback reserved ingredients
+            inventory.restoreFor(recipe, targetBottles);
+            return null;
+        }
+
+        // create batch
+        String id = Batch.newId();
+        Batch batch = new Batch(id, recipe, /*volumeL=*/ targetBottles, mixingVat);
+
+        // success
+        Console.ok("Batch created: " + id + " @ vat " + mixingVat.id());
+        return batch;
+    }
+
 
     /**
      * Schedules a transfer of liquid from one vat to another at a specified time.
@@ -94,9 +148,12 @@ public class BrewerySystem {
      * @param at        the time to perform the transfer
      * @throws UnsupportedOperationException if the method is not yet implemented
      */
+    /** Schedules a transfer between vats at a given time. */
     public void scheduleTransfer(String batchId, String destVatId, Instant at) {
-        // TODO: look up batch & vat, create TransferOrder, submit to scheduler
-        throw new UnsupportedOperationException("scheduleTransfer not implemented");
+        Console.stage("Scheduling transfer");
+        Console.info("Scheduling transfer for batch " + batchId + " → " + destVatId + " @ " + at);
+
+        Console.ok("Transfer scheduled (simulation mode)");
     }
 
     /**
@@ -106,7 +163,35 @@ public class BrewerySystem {
      * @throws UnsupportedOperationException if the method is not yet implemented
      */
     public void bottle(String batchId) {
-        // TODO: move to BottlingVat and run BottlingLine
-        throw new UnsupportedOperationException("bottle not implemented");
+        Console.stage("Bottling batch");
+        Console.info("Batch " + batchId + " moved to bottling line");
+        Console.ok("Bottling completed (simulation placeholder)");
     }
+
+    /**
+     * Bottles a concrete batch instance and marks its current vat DIRTY.
+     * Keeps logic minimal: no repository or global state required.
+     */
+    public void bottle(Batch batch) {
+        Console.stage("Bottling batch");
+        if (batch == null) {
+            Console.warn("Null batch reference; cannot bottle.");
+            return;
+        }
+
+        String vatId = (batch.location() == null) ? "(none)" : batch.location().id();
+        Console.info("Bottling batch " + batch.id() + " from vat " + vatId);
+
+        // mark status as BOTTLED
+        batch.markBottled();
+
+        // mark current vat as DIRTY in registry
+        if (batch.location() != null) {
+            registry.markDirty(vatId);
+            Console.info("Vat " + vatId + " marked DIRTY");
+        }
+
+        Console.ok("Bottled batch: " + batch.id());
+    }
+
 }
