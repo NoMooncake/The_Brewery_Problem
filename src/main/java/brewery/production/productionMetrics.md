@@ -1,28 +1,23 @@
 ## **Package: brewery.production**
 
-This package models the production process, representing batches, their lifecycle, monitoring readings, bottling, and transfer logistics.  
-It connects the recipe and plant layers by managing real brewing data flow and state transitions.
+This package models the brewing process itself: batches, production states, readings, and transfer operations.  
+It represents the dynamic workflow of creating, monitoring, and bottling beverages.
+
+Classes in scope: `Batch`, `BatchStatus`, `BottlingLine`, `Reading`, `TransferOrder`.
 
 | Class | WMC | DIT | NOC | CBO | RFC | **Design Comment** |
-|:------|:---:|:---:|:---:|:---:|:---:|:--|
-| **Batch** | 10 | 1 | 0 | 4 | 8 | Central entity representing a brewing batch; maintains readings and status; moderate complexity as it interfaces with recipes and vats. |
-| **BatchStatus** | 1 | 1 | 0 | 0 | 1 | Enum capturing the lifecycle states; minimal logic, high readability. |
-| **BottlingLine** | 3 | 1 | 0 | 1 | 3 | Contains stub methods for start/complete bottling; low coupling, easy to extend later. |
-| **Reading** | 4 | 1 | 0 | 1 | 3 | Immutable data holder for monitoring readings; simple design with timestamp, temperature, gravity. |
-| **TransferOrder** | 8 | 1 | 0 | 4 | 7 | Coordinates movement of batches between vats; interacts with `PathFinder`, `Manifold`, and `PlantRegistry`; expected higher coupling. |
-| **Average (Production)** | **5.2** | **1** | **0** | **2** | **4.4** | Balanced design; slightly higher coupling due to orchestration responsibilities, but overall low complexity and strong cohesion. |
-
-> **Metric notes:**
-> - **WMC:** Combines attributes and method statements (estimated by semicolons).
-> - **DIT:** All classes extend directly from `Object` (no subclassing).
-> - **NOC:** None of the classes act as parents (no children).
-> - **CBO:** `Batch` and `TransferOrder` show moderate coupling due to cross-layer coordination.
-> - **RFC:** Derived from total methods + external calls; higher for orchestration classes.
+|:------|:---:|:---:|:---:|:---:|:---:|:--------------------|
+| **Batch** | 14 | 1 | 0 | 5 | 10 | Core production entity linking recipe, vat, and readings; manages state transitions and logging; moderate complexity due to orchestration methods. |
+| **BatchStatus (enum)** | 6 | 1 | 0 | 1 | 6 | Enum capturing production stages; minimal coupling, low complexity. |
+| **BottlingLine** | 5 | 1 | 0 | 3 | 5 | Stub for future expansion; currently simulates bottling; small cohesive interface. |
+| **Reading** | 4 | 1 | 0 | 2 | 4 | Data container for sensor metrics (e.g., temperature, gravity); pure value object. |
+| **TransferOrder** | 6 | 1 | 0 | 3 | 5 | Represents scheduled liquid transfers; straightforward getters/setters; low coupling. |
+| **Total (Production)** | **35** | **5** | **0** | **14** | **30** | Totals across the production subsystem. |
+| **Average (Production)** | **7.0** | **1.0** | **0.0** | **2.8** | **6.0** | Balanced complexity: modest orchestration in `Batch`, simple cohesive data objects elsewhere; shallow inheritance. |
 
 ### **Interpretation**
-- **Moderate WMC:** `Batch` and `TransferOrder` have the highest WMC, reflecting their role as process coordinators.
-- **Low DIT:** No inheritance hierarchy, simplifying maintenance and testing.
-- **Low-to-moderate CBO:** Some necessary coupling for coordination (batches, vats, manifolds).
-- **Small RFC:** Compact interfaces; methods are cohesive and task-specific.
-- **Overall:** The production package is the **functional heart** of the system—cohesive, maintainable, and moderately complex by design.  
-  It effectively bridges data (recipes) and physical processes (plant) without excessive coupling.
+- **WMC:** `Batch` has the highest due to multi-field coordination (state, vat, recipe, readings). Others remain lightweight.
+- **DIT / NOC:** All classes inherit only from `Object`; no subclassing beyond the `enum` (DIT = 1, NOC = 0).
+- **CBO:** Coupling limited to domain peers (`Vat`, `Recipe`, etc.); each class depends on a narrow set of external types.
+- **RFC:** Compact public surface; no method explosion; cohesion remains high across classes.
+- **Overall:** The production package provides a solid middle layer—slightly higher logic density in `Batch`, offset by lean, data-oriented support classes.

@@ -1,25 +1,22 @@
 ## **Package: brewery.recipes**
 
-This package defines recipe-domain data and lookup facilities used by production and inventory.  
-It is intentionally data-centric: lightweight structures with small, stable APIs.
+This package defines the static recipe domain model for the Brewery Problem.  
+It specifies ingredients, their quantities, and recipe composition logic.
+
+Classes in scope: `Ingredient`, `RecipeRequirement`, `Recipe`, `RecipeLibrary`.
 
 | Class | WMC | DIT | NOC | CBO | RFC | **Design Comment** |
-|:------|:---:|:---:|:---:|:---:|:---:|:--|
-| **Ingredient** | 1 | 1 | 0 | 0 | 1 | Immutable record holding a name; zero coupling and trivial interface. |
-| **RecipeRequirement** | 3 | 1 | 0 | 1 | 3 | Single requirement (ingredient, amount, unit); tiny cohesive data holder used by `Recipe` and `Inventory`. |
-| **Recipe** | 8 | 1 | 0 | 3 | 7 | Core recipe blueprint (name, targetTemp, gravity targets, requirements); moderate RFC due to collection access and helper queries. |
-| **RecipeLibrary** | 5 | 1 | 0 | 2 | 5 | Central registry (add/get by name); light coupling to collections and exceptions; compact, stable API. |
-| **Average (Recipes)** | **4.3** | **1** | **0** | **1.5** | **4** | Data-focused design with low complexity and minimal coupling; ideal for reuse across layers. |
-
-> **Metric notes:**
-> - **WMC:** Attributes + method statements (estimated by semicolons and simple operations).
-> - **DIT:** All classes extend directly from `Object` (no inheritance tree).
-> - **NOC:** No class serves as a parent; the package is intentionally flat.
-> - **CBO:** Limited to use of Java collections and references to domain types (`Ingredient`, `RecipeRequirement`).
-> - **RFC:** Small, stable public surfaces; `Recipe` has slightly higher RFC due to list/map management helpers.
+|:------|:---:|:---:|:---:|:---:|:---:|:--------------------|
+| **Ingredient** | 2 | 1 | 0 | 1 | 2 | Immutable record representing a named brewing ingredient; minimal logic and zero mutable state. |
+| **RecipeRequirement** | 5 | 1 | 0 | 2 | 4 | Holds an ingredient, amount, and unit; straightforward getters with strong cohesion. |
+| **Recipe** | 15 | 1 | 0 | 5 | 10 | Defines composition of requirements and yield; moderate complexity from internal list management. |
+| **RecipeLibrary** | 12 | 1 | 0 | 4 | 8 | Array-backed store of recipes; handles uniqueness checks, linear search, and snapshot generation. |
+| **Total (Recipes)** | **34** | **4** | **0** | **12** | **24** | Aggregated totals for the recipe domain model. |
+| **Average (Recipes)** | **8.5** | **1.0** | **0.0** | **3.0** | **6.0** | Shallow inheritance, moderate complexity from recipe composition, and low coupling; cohesive data relationships. |
 
 ### **Interpretation**
-- **Low WMC & RFC:** Classes are simple, cohesive data abstractions—easy to reason about and test.
-- **Minimal CBO:** Dependencies are limited to standard collections and local domain types, keeping modules decoupled.
-- **Flat DIT/NOC:** A deliberately flat structure avoids inheritance complexity in the data layer.
-- **Overall:** The recipes package provides a **clean, reusable model** that other layers (production, inventory) can depend on with minimal risk of ripple effects.
+- **WMC:** Highest in `Recipe` and `RecipeLibrary` due to data management routines; all others remain trivial.
+- **DIT / NOC:** Flat hierarchy (DIT = 1, NOC = 0), aligning with pure data-object modeling.
+- **CBO:** Limited mainly to ingredient and requirement cross-links; no external dependencies.
+- **RFC:** Each class exposes a compact, predictable interface.
+- **Overall:** The recipe package demonstrates a clean, data-oriented design with minimal control logic, fitting the “library of definitions” role in the architecture.
