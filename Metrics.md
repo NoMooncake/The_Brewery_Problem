@@ -1,11 +1,7 @@
 # **Brewery Problem Metrics and Peer Review Analysis**
 
-### **1. Overview**
-This report summarizes the structural metrics of the *Brewery Problem* project across all packages, based on five key indicators: **WMC**, **DIT**, **NOC**, **CBO**, and **RFC**.  It highlights system-level patterns, potential design bottlenecks, and priorities for refactoring.
-
----
-
-### **2. Aggregated Metrics**
+### **1. Metrics Analysis**
+This report analyzes the *Brewery Problem* project based on five structural metrics: **Weighted Methods per Class (WMC)**, **Depth of Inheritance Tree (DIT)**, **Number of Children (NOC)**, **Coupling Between Objects (CBO)**, and **Response for a Class (RFC)**. These values reflect the system’s overall complexity, cohesion, and design balance.
 
 | Package | WMC | DIT | NOC | CBO | RFC |
 |:--------|----:|----:|----:|----:|----:|
@@ -17,48 +13,43 @@ This report summarizes the structural metrics of the *Brewery Problem* project a
 | **brewery.services** | 25 | 2 | 0 | 11 | 21 |
 | **Total** | **215** | **16** | **6** | **71** | **138** |
 
----
+**Complexity (WMC):** Overall complexity is moderate (215). Nearly half originates from `plant` and `production`, confirming that manufacturing and orchestration dominate system logic.
 
-### **3. Key Insights**
+**Inheritance (DIT/NOC):** The hierarchy remains shallow (DIT ≤ 5, NOC = 6), mainly from `Vat` and `Sensor` abstractions. This is structurally acceptable but could be simplified by merging minor subclasses.
 
-- **Complexity (WMC):**  
-  Moderate overall (215). `plant` and `production` account for ~50% of total complexity, showing heavy logic concentration in process layers.
+**Coupling (CBO):** Coupling peaks in `app` (15) and `plant` (16). These results reflect expected dependencies from orchestration but suggest opportunities to reduce cross-module reliance.
 
-- **Inheritance (DIT/NOC):**  
-  Shallow hierarchy (DIT ≤ 5, NOC = 6). Most subclasses stem from `Vat` and `Sensor`; further subclassing should serve distinct behavior only.
-
-- **Coupling (CBO):**  
-  Highest in `app` and `plant` (15–16). Suggests strong orchestration and data interlinking—decouple via service interfaces and dependency injection.
-
-- **Responsiveness (RFC):**  
-  Balanced exposure. Keep RFC ≤ 12 per class, especially in `production` where orchestration is denser.
+**Responsiveness (RFC):** RFC values are well-distributed. Keeping most classes below 12 ensures maintainable interfaces and testability.
 
 ---
 
-### **4. Package Observations**
-
-- **app:** Central controller; simplify by splitting orchestration tasks.
-- **inventory:** Well-contained and cohesive—keep structure.
-- **plant:** Most complex; consider submodules (e.g., `vats`, `registry`) to lower cognitive load.
-- **production:** Slightly high RFC; apply event-driven delegation.
-- **recipes:** Lightweight and stable; maintain as data-only module.
-- **services:** Slight coupling spikes; refactor through clearer port–adapter boundaries.
+### **2. Summary of Group Discussion**
+During group review, they presented simpler architectures with fewer subpackages. Their total complexity values were slightly lower, but they achieved this through **cleaner grouping and fewer class boundaries**.  
+In contrast, my design favored strict modular separation, resulting in more detailed—but heavier—package interactions. Despite higher complexity, it provided flexibility for future scaling and clearer domain ownership.
 
 ---
 
-### **5. Improvement Focus**
-
-1. **Delegate orchestration** from `BrewerySystem` to sub-services.
-2. **Introduce domain ports** (`MonitoringPort`, `SchedulerPort`) to lower inter-package CBO.
-3. **Flatten hierarchies**—merge simple subclasses into composition-based structures.
-4. **Tighten APIs** by limiting public methods and keeping data modules immutable.
+### **3. Surprises**
+The most surprising finding was that **my architecture was more granular than others**. While I aimed for modular precision, excessive subdivision inflated WMC and CBO values.  
+They adopted broader modules achieved cleaner dependency graphs and easier-to-read structures, even with similar functionality. This revealed that **clarity sometimes outweighs granularity** in maintainable design.
 
 ---
 
-### **6. Conclusion**
-The architecture is structurally sound with **moderate complexity and clean layering**, but **coupling hotspots** exist in orchestration-heavy modules. Minor modular refactoring and clearer boundaries will significantly improve maintainability without altering the overall design.
+### **4. Planned Changes**
+1. **Merge small modules** in `plant` and `production` to reduce WMC and RFC totals.
+2. **Delegate orchestration** from `BrewerySystem` to separate service layers.
+3. **Introduce domain ports** (e.g., `MonitoringPort`, `SchedulerPort`) to lower coupling between layers.
+4. **Simplify inheritance**—replace trivial subclasses with composition.
+
+These refinements will preserve modularity while improving readability and reducing class-level dependencies.
 
 ---
+
+### **5. Conclusion**
+The *Brewery Problem* design currently shows **balanced complexity and strong layering**, but the metrics highlight over-segmentation as the main inefficiency. Simplifying module boundaries and tightening orchestration will reduce complexity without sacrificing clarity. Group feedback emphasized that **simplicity and cohesion** are as critical as strict modular correctness in achieving sustainable design quality.
+
+---
+
 **Author:** Yue Wu  
 **Course:** CS5010 – Programming Design Paradigm  
-**Date:** October 20, 2025  
+**Date:** October 21, 2025  
