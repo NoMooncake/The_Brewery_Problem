@@ -23,19 +23,17 @@ This report analyzes the *Brewery Problem* project based on five structural metr
 
 ---
 
-### **2. Summary of Group Discussion**
+### **2. Summary of Group Discussion and Surprises**
 During group review, they presented simpler architectures with fewer subpackages. Their total complexity values were slightly lower, but they achieved this through **cleaner grouping and fewer class boundaries**.  
 In contrast, my design favored strict modular separation, resulting in more detailed—but heavier—package interactions. Despite higher complexity, it provided flexibility for future scaling and clearer domain ownership.
 
----
-
-### **3. Surprises**
 The most surprising finding was that **my architecture was more granular than others**. While I aimed for modular precision, excessive subdivision inflated WMC and CBO values.  
 They adopted broader modules achieved cleaner dependency graphs and easier-to-read structures, even with similar functionality. This revealed that **clarity sometimes outweighs granularity** in maintainable design.
 
+
 ---
 
-### **4. Planned Changes**
+### **3. Planned Changes**
 1. **Merge small modules** in `plant` and `production` to reduce WMC and RFC totals.
 2. **Delegate orchestration** from `BrewerySystem` to separate service layers.
 3. **Introduce domain ports** (e.g., `MonitoringPort`, `SchedulerPort`) to lower coupling between layers.
@@ -45,11 +43,7 @@ These refinements will preserve modularity while improving readability and reduc
 
 ---
 
-### **5. Conclusion**
+### **4. Conclusion**
 The *Brewery Problem* design currently shows **balanced complexity and strong layering**, but the metrics highlight over-segmentation as the main inefficiency. Simplifying module boundaries and tightening orchestration will reduce complexity without sacrificing clarity. Group feedback emphasized that **simplicity and cohesion** are as critical as strict modular correctness in achieving sustainable design quality.
 
 ---
-
-**Author:** Yue Wu  
-**Course:** CS5010 – Programming Design Paradigm  
-**Date:** October 21, 2025  
